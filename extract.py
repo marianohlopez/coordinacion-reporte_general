@@ -170,14 +170,18 @@ def extract_seguim(cursor):
 
 def extract_prest(cursor):
   query = """ 
-    SELECT prestacion_id, prestacion_alumno, DATE_FORMAT(prestacion_fec_aut_OS, '%d-%m%-%Y') as fec_act
-	FROM
-		v_prestaciones
-	WHERE 
-		prestacion_estado = 1
-		AND prestipo_nombre_corto != "TERAPIAS"
-        AND prestacion_fec_aut_OS >= CURDATE() - INTERVAL 14 DAY;
-    """
+    SELECT 
+      prestacion_id, 
+      CONCAT(alumno_apellido, ", ",alumno_nombre), 
+      DATE_FORMAT(prestacion_fec_aut_OS, '%d-%m%-%Y') as fec_act
+    FROM
+      v_prestaciones
+    WHERE 
+      prestacion_estado = 1
+      AND prestipo_nombre_corto != "TERAPIAS"
+      AND prestacion_fec_aut_OS >= CURDATE() - INTERVAL 14 DAY
+    ORDER BY prestacion_fec_aut_OS ASC;
+  """
   cursor.execute(query)
   return cursor.fetchall()
 
