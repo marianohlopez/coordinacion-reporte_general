@@ -1,7 +1,5 @@
-import locale
-import calendar
-
-locale.setlocale(locale.LC_TIME, "es_ES.utf8")
+from babel.dates import format_date
+from datetime import date
 
 def extract_general(cursor):
 
@@ -220,6 +218,8 @@ def extract_altas_bajas(cursor):
   # Transformar el número de mes en nombre en español
   result = []
   for anio, mes, total_altas, total_bajas in rows:
-      nombre_mes = calendar.month_name[mes].capitalize()
-      result.append([anio, nombre_mes, total_altas, total_bajas]) 
+      fecha = date(anio, mes, 1)
+      nombre_mes = format_date(fecha, "MMMM", locale='es').capitalize()   
+      result.append([anio, nombre_mes, total_altas, total_bajas])
+
   return result
