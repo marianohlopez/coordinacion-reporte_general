@@ -1,7 +1,6 @@
-import yagmail
 from extract import (extract_general, extract_informes, extract_seguim, extract_prest, 
   extract_prest_sin_pa, extract_altas_bajas)
-from transform import export_excel
+from transform import export_excel, enviar_correo
 from db import connect_db
 
 def main():
@@ -14,7 +13,8 @@ def main():
     seguim_data = extract_seguim(cursor)
     prest_data = extract_prest(cursor)
     altas_bajas = extract_altas_bajas(cursor)
-    export_excel(general_data, prest_sin_pa, informes_data, seguim_data, prest_data, altas_bajas)
+    archivo_excel = export_excel(general_data, prest_sin_pa, informes_data, seguim_data, prest_data, altas_bajas)
+    enviar_correo(archivo_excel)
 
 if __name__ == "__main__":
   main()

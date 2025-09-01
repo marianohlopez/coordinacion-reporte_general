@@ -178,7 +178,7 @@ def extract_prest(cursor):
 	WHERE 
 		prestacion_estado = 1
 		AND prestipo_nombre_corto != "TERAPIAS"
-        AND prestacion_fec_aut_OS >= CURDATE() - INTERVAL 7 DAY;
+        AND prestacion_fec_aut_OS >= CURDATE() - INTERVAL 14 DAY;
     """
   cursor.execute(query)
   return cursor.fetchall()

@@ -1,6 +1,15 @@
 from openpyxl import Workbook
 from openpyxl.styles import Font
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+import yagmail
+
+load_dotenv()
+
+MAIL_AUTOR = os.getenv("MAIL_AUTOR")
+APP_GMAIL_PASS = os.getenv("APP_GMAIL_PASS")
+MAIL_DESTINO = os.getenv("MAIL_DESTINO")
 
 today = datetime.now()
 
@@ -91,6 +100,19 @@ def export_excel(data_resumen, data_sin_pa, data_informes, data_seguim, data_pre
     wb.save(nombre_archivo)
     print(f"Archivo Excel generado: {nombre_archivo}")
     return nombre_archivo
+
+def enviar_correo(nombre_archivo):
+    try:
+        yag = yagmail.SMTP(MAIL_AUTOR, APP_GMAIL_PASS)
+        yag.send(
+            to=MAIL_DESTINO,
+            subject="Reporte general de Coordinación",
+            contents="Buenos días, se adjunta el reporte del área de Coordinación. ¡Saludos!",
+            attachments=nombre_archivo
+        )
+        print("Correo enviado correctamente.")
+    except Exception as e:
+        print("Error al enviar el correo:", e)
 
 
 
