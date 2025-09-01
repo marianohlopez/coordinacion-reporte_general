@@ -14,7 +14,7 @@ def main():
     prest_data = extract_prest(cursor)
     altas_bajas = extract_altas_bajas(cursor)
     archivo_excel = export_excel(general_data, prest_sin_pa, informes_data, seguim_data, prest_data, altas_bajas)
-    #enviar_correo(archivo_excel)
+    enviar_correo(archivo_excel)
 
 if __name__ == "__main__":
   main()
