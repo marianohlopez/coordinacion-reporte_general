@@ -92,23 +92,24 @@ def extract_general(cursor):
 def extract_prest_sin_pa(cursor):
   query = """ 
     SELECT 
-    p.prestacion_id,
-    p.prestacion_alumno,
-    DATE_FORMAT(COALESCE(MAX(a.asignpa_pa_fec_baja), a.asignpa_fec1), '%d-%m%-%Y') AS ultima_fecha_sin_pa,
-    DATEDIFF(CURDATE(), COALESCE(MAX(a.asignpa_pa_fec_baja), a.asignpa_fec1)) AS dias_sin_pa
+      p.prestacion_id,
+      CONCAT(p.alumno_apellido, ", ",p.alumno_nombre) as alumno_completo,
+      DATE_FORMAT(COALESCE(MAX(a.asignpa_pa_fec_baja), a.asignpa_fec1), '%d-%m%-%Y') AS ultima_fecha_sin_pa,
+      DATEDIFF(CURDATE(), COALESCE(MAX(a.asignpa_pa_fec_baja), a.asignpa_fec1)) AS dias_sin_pa
     FROM 
-        v_prestaciones p
+      v_prestaciones p
     LEFT JOIN 
-        v_asignaciones_pa a 
-        ON p.prestacion_id = a.asignpa_prest
+      v_asignaciones_pa a 
+      ON p.prestacion_id = a.asignpa_prest
     WHERE 
-        p.prestipo_nombre_corto != 'TERAPIAS'
-        AND p.prestacion_pa IS NULL
-        AND p.prestacion_estado = 1
+      p.prestipo_nombre_corto != 'TERAPIAS'
+      AND p.prestacion_pa IS NULL
+      AND p.prestacion_estado = 1
     GROUP BY 
-        p.prestacion_id, p.prestacion_alumno
+      p.prestacion_id, p.prestacion_alumno
     HAVING 
-        dias_sin_pa > 30;
+      dias_sin_pa > 30
+	  ORDER BY dias_sin_pa;
     """
   cursor.execute(query)
   return cursor.fetchall()
