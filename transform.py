@@ -45,8 +45,15 @@ def export_excel(data_resumen, data_sin_pa, data_informes, data_seguim, data_pre
     # Tercera hoja (informes)
     ws3 = wb.create_sheet(title="Detalle de informes")
 
+    """ 
+             COUNT(DISTINCT CASE WHEN i.informecat_nombre = "Conformidad familia" THEN i.alumnoinforme_id END) AS conf_familia,
+		COUNT(DISTINCT CASE WHEN i.informecat_nombre = "Informe escolar" THEN i.alumnoinforme_id END) AS inf_escolar,
+        COUNT(DISTINCT CASE WHEN i.informecat_nombre = "Informe terapéutico ext." THEN i.alumnoinforme_id END) AS inf_ter_ext,
+        COUNT(DISTINCT CASE WHEN i.informecat_nombre = "Plan de trabajo - Coordinacion" THEN i.alumnoinforme_id END) AS plan_coordi """
+
     headers_informes = ["COORDINADORA", "ALUMNO", "DNI ALUMNO", "INF. ADMISIÓN", "INF. DIAGNÓSTICO",
-                        "OTRO", "AA", "PPI", "INF. FINAL"]
+                        "OTRO", "AA", "PPI", "INF. FINAL", "CONF. FLIA.", "INF. ESCOLAR", "INF. TER. EXT.",
+                        "PLAN TRAB. COORD."]
     
     ws3.append(headers_informes)
 
@@ -96,7 +103,7 @@ def export_excel(data_resumen, data_sin_pa, data_informes, data_seguim, data_pre
     for row in data_alt_baj:
       ws6.append(row)
         
-    nombre_archivo = f"reporte_coordinadoras_{today.strftime('%Y-%m-%d')}.xlsx"
+    nombre_archivo = f"reporte_coordinacion_{today.strftime('%Y-%m-%d')}.xlsx"
     wb.save(nombre_archivo)
     print(f"Archivo Excel generado: {nombre_archivo}")
     return nombre_archivo
@@ -107,7 +114,8 @@ def enviar_correo(nombre_archivo):
         yag.send(
             to=MAIL_DESTINO,
             subject="Reporte general de Coordinación",
-            contents="Buenos días, se adjunta el reporte del área de Coordinación. ¡Saludos!",
+            contents= """Buenos días, se adjunta el reporte del área de Coordinación.
+              \nSaludos,\nMariano López - Ailes Inclusión.""",
             attachments=nombre_archivo
         )
         print("Correo enviado correctamente.")
