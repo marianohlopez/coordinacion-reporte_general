@@ -45,12 +45,6 @@ def export_excel(data_resumen, data_sin_pa, data_informes, data_seguim, data_pre
     # Tercera hoja (informes)
     ws3 = wb.create_sheet(title="Detalle de informes")
 
-    """ 
-             COUNT(DISTINCT CASE WHEN i.informecat_nombre = "Conformidad familia" THEN i.alumnoinforme_id END) AS conf_familia,
-		COUNT(DISTINCT CASE WHEN i.informecat_nombre = "Informe escolar" THEN i.alumnoinforme_id END) AS inf_escolar,
-        COUNT(DISTINCT CASE WHEN i.informecat_nombre = "Informe terapéutico ext." THEN i.alumnoinforme_id END) AS inf_ter_ext,
-        COUNT(DISTINCT CASE WHEN i.informecat_nombre = "Plan de trabajo - Coordinacion" THEN i.alumnoinforme_id END) AS plan_coordi """
-
     headers_informes = ["COORDINADORA", "ALUMNO", "DNI ALUMNO", "INF. ADMISIÓN", "INF. DIAGNÓSTICO",
                         "OTRO", "AA", "PPI", "INF. FINAL", "CONF. FLIA.", "INF. ESCOLAR", "INF. TER. EXT.",
                         "PLAN TRAB. COORD."]
