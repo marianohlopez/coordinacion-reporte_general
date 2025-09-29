@@ -41,4 +41,4 @@ Su objetivo es facilitar la supervisión de la carga de informes y seguimientos 
   - `python-dotenv` → gestión de credenciales en variables de entorno
   - `babel` → formato de fechas en español
 - **Base de datos:** MySQL (consultas SQL)
-- **Entorno:** Script ejecutable programado (cron job o Task Scheduler)
+- **Entorno:** Script ejecutable programado con GitHub Actions
