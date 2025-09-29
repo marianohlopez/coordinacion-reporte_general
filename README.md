@@ -4,6 +4,8 @@ Este proyecto implementa un pipeline ETL en Python que extrae datos desde una ba
 
 Su objetivo es facilitar la supervisión de la carga de informes y seguimientos mensuales por alumno, permitiendo a la coordinación detectar rápidamente faltantes y evaluar el nivel de cumplimiento de cada coordinadora.
 
+![Flujo de datos](assets/flujo.png)
+
 ---
 
 ## 🚀 Características principales
