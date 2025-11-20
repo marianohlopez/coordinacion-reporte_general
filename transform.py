@@ -13,7 +13,7 @@ MAIL_DESTINO = os.getenv("MAIL_DESTINO")
 
 today = datetime.now()
 
-def export_excel(data_resumen, data_sin_pa, data_informes, data_seguim, data_prest, data_alt_baj):
+def export_excel(data_resumen, data_sin_pa, data_informes, data_seguim, data_seguim_mes, data_prest, data_alt_baj):
     wb = Workbook()
     ws = wb.active
     ws.title = "Resumen general"
@@ -57,7 +57,7 @@ def export_excel(data_resumen, data_sin_pa, data_informes, data_seguim, data_pre
     for row in data_informes:
         ws3.append(row)
 
-    # Cuarta hoja (seguimientos)
+    # Cuarta hoja (seguimientos_detalle)
     ws4 = wb.create_sheet(title="Detalle de seguimientos")
 
     headers_seguimientos = ["COORDINADORA", "PRESTACION ID", "ALUMNO", "MES", "FECHA DE CARGA", 
@@ -71,31 +71,46 @@ def export_excel(data_resumen, data_sin_pa, data_informes, data_seguim, data_pre
     for row in data_seguim:
         ws4.append(row)
 
-    # Quinta hoja (Ultimas prest. activadas)
-    ws5 = wb.create_sheet(title="Últimas prest. activadas")
+    # Quinta hoja (seguimientos_mes)
+    ws5 = wb.create_sheet(title="Seguimientos por mes")
 
-    headers_prest = ["PRESTACION ID", "ALUMNO", "FECHA DE ACT."]
+    headers_seguimientos_mes = ["COORDINADOR", "PRESTACION ID", "ALUMNO", "ENE", "FEB", "MAR", 
+                                "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC", 
+                                "TOTAL ANUAL"]
     
-    ws5.append(headers_prest)
+    ws5.append(headers_seguimientos_mes)
 
     for cell in ws5[1]:
       cell.font = Font(bold=True)
 
-    for row in data_prest:
+    for row in data_seguim_mes:
         ws5.append(row)
 
-    # Sexta hoja (Asignaciones y bajas)
-    ws6 = wb.create_sheet(title="Asignaciones y bajas")
+    # sexta hoja (Ultimas prest. activadas)
+    ws6 = wb.create_sheet(title="Últimas prest. activadas")
 
-    headers_altas_bajas = ["AÑO", "MES", "ALTAS", "BAJAS"]
+    headers_prest = ["PRESTACION ID", "ALUMNO", "FECHA DE ACT."]
     
-    ws6.append(headers_altas_bajas)
+    ws6.append(headers_prest)
 
     for cell in ws6[1]:
       cell.font = Font(bold=True)
 
+    for row in data_prest:
+        ws6.append(row)
+
+    # septima hoja (Asignaciones y bajas)
+    ws7 = wb.create_sheet(title="Asignaciones y bajas")
+
+    headers_altas_bajas = ["AÑO", "MES", "ALTAS", "BAJAS"]
+    
+    ws7.append(headers_altas_bajas)
+
+    for cell in ws7[1]:
+      cell.font = Font(bold=True)
+
     for row in data_alt_baj:
-      ws6.append(row)
+      ws7.append(row)
         
     nombre_archivo = f"reporte_coordinacion_{today.strftime('%Y-%m-%d')}.xlsx"
     wb.save(nombre_archivo)

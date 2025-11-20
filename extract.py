@@ -173,6 +173,46 @@ def extract_seguim(cursor):
   cursor.execute(query)
   return cursor.fetchall()
 
+def extract_seguim_mes(cursor):
+  query = """ 
+    SELECT
+      CONCAT(c.coordi_apellido, ', ', c.coordi_nombre) AS nombre_coordi,
+      p.prestacion_id,
+      CONCAT(p.alumno_apellido, ', ', p.alumno_nombre) AS nombre_alumno,
+      SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 1 THEN 1 ELSE 0 END) AS ene,
+      SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 2 THEN 1 ELSE 0 END) AS feb,
+      SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 3 THEN 1 ELSE 0 END) AS mar,
+      SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 4 THEN 1 ELSE 0 END) AS abr,
+      SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 5 THEN 1 ELSE 0 END) AS may,
+      SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 6 THEN 1 ELSE 0 END) AS jun,
+      SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 7 THEN 1 ELSE 0 END) AS jul,
+      SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 8 THEN 1 ELSE 0 END) AS ago,
+      SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 9 THEN 1 ELSE 0 END) AS sep,
+      SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 10 THEN 1 ELSE 0 END) AS oct,
+      SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 11 THEN 1 ELSE 0 END) AS nov,
+      SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 12 THEN 1 ELSE 0 END) AS dic,
+      COUNT(s.segalum_prestacion) AS total_anual
+    FROM
+      v_prestaciones p
+    LEFT JOIN v_seguimientos s
+      ON p.prestacion_id = s.segalum_prestacion
+      AND s.segalum_rol_carga = 'COORDI'
+      AND YEAR(s.segalum_fec_carga) = 2025
+    LEFT JOIN v_coordinadores c
+      ON p.prestacion_coordi = c.coordi_id
+    WHERE
+      p.prestacion_estado IN (0, 1)
+      AND p.prestipo_nombre_corto != 'TERAPIAS'
+      AND p.prestacion_anio = 2025
+      AND prestacion_coordi IS NOT NULL
+    GROUP BY
+      p.prestacion_id
+    ORDER BY
+      nombre_coordi;
+    """
+  cursor.execute(query)
+  return cursor.fetchall()
+
 def extract_prest(cursor):
   query = """ 
     SELECT 
