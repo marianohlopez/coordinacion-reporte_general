@@ -24,6 +24,7 @@ def extract_general(cursor):
           prestacion_estado IN (0, 1)
           AND prestipo_nombre_corto != 'TERAPIAS'
           AND coordi_apellido IS NOT NULL
+          AND prestacion_anio = 2026
         GROUP BY coordi_nombre, coordi_apellido
     ),
     -- Informes (solo de la coordinadora asignada)
@@ -40,7 +41,7 @@ def extract_general(cursor):
           ON u.user_name = i.usuario
         AND u.user_email = c.coordi_mail
         WHERE
-          i.alumnoinforme_anio = '2025'
+          i.alumnoinforme_anio = '2026'
           AND p.prestipo_nombre_corto != 'TERAPIAS'
         GROUP BY c.coordi_id
     ),
@@ -60,7 +61,7 @@ def extract_general(cursor):
         WHERE
           p.prestacion_estado IN (0, 1)
           AND p.prestipo_nombre_corto != 'TERAPIAS'
-          AND YEAR(segalum_fec_carga) = 2025
+          AND YEAR(segalum_fec_carga) = 2026
         GROUP BY c.coordi_id
     )
     -- Unir todo
@@ -95,7 +96,7 @@ def extract_prest_sin_pa(cursor):
       p.prestacion_id,
       CONCAT(p.alumno_apellido, ", ",p.alumno_nombre) as alumno_completo,
       DATE_FORMAT(COALESCE(MAX(a.asignpa_pa_fec_baja), a.asignpa_fec1), '%d-%m%-%Y') AS ultima_fecha_sin_pa,
-      DATEDIFF(CURDATE(), COALESCE(MAX(a.asignpa_pa_fec_baja), a.asignpa_fec1)) AS dias_sin_pa
+      DATEDIFF(CURDATE(), COALESCE(MAX(a.asignpa_pa_fec_baja), p.prestacion_fec_pase_activo)) AS dias_sin_pa
     FROM 
       v_prestaciones p
     LEFT JOIN 
@@ -106,7 +107,7 @@ def extract_prest_sin_pa(cursor):
       AND p.prestacion_pa IS NULL
       AND p.prestacion_estado = 1
     GROUP BY 
-      p.prestacion_id, p.prestacion_alumno
+      p.prestacion_id
     HAVING 
       dias_sin_pa > 30
 	  ORDER BY dias_sin_pa;
@@ -136,10 +137,11 @@ def extract_informes(cursor):
         ON p.prestacion_coordi = c.coordi_id
     LEFT JOIN v_informes i 
         ON p.alumno_id = i.alumno_id 
-    AND i.alumnoinforme_anio = '2025'
+    AND i.alumnoinforme_anio = '2026'
     WHERE
         p.prestipo_nombre_corto != 'TERAPIAS'
         AND p.prestacion_estado IN (0, 1)
+        AND p.prestacion_anio = 2026
     GROUP BY p.alumno_id, p.alumno_dni
     ORDER BY nombre_coordi;
     """
@@ -167,7 +169,8 @@ def extract_seguim(cursor):
         p.prestacion_estado IN (0, 1)
         AND p.prestipo_nombre_corto != 'TERAPIAS'
         AND s.segalum_rol_carga = 'COORDI'
-        AND YEAR(s.segalum_fec_carga) = 2025 
+        AND YEAR(s.segalum_fec_carga) = 2026 
+        AND p.prestacion_anio = 2026
     ORDER BY nombre_coordi
     """
   cursor.execute(query)
@@ -197,13 +200,13 @@ def extract_seguim_mes(cursor):
     LEFT JOIN v_seguimientos s
       ON p.prestacion_id = s.segalum_prestacion
       AND s.segalum_rol_carga = 'COORDI'
-      AND YEAR(s.segalum_fec_carga) = 2025
+      AND YEAR(s.segalum_fec_carga) = 2026
     LEFT JOIN v_coordinadores c
       ON p.prestacion_coordi = c.coordi_id
     WHERE
       p.prestacion_estado IN (0, 1)
       AND p.prestipo_nombre_corto != 'TERAPIAS'
-      AND p.prestacion_anio = 2025
+      AND p.prestacion_anio = 2026
       AND prestacion_coordi IS NOT NULL
     GROUP BY
       p.prestacion_id
@@ -245,7 +248,7 @@ def extract_altas_bajas(cursor):
             1 AS altas,
             0 AS bajas
         FROM v_asignaciones_pa
-        WHERE YEAR(asignpa_pa_fec_alta) IN (2025, 2024)
+        WHERE YEAR(asignpa_pa_fec_alta) IN (2026, 2025)
 
         UNION ALL
 
@@ -256,7 +259,7 @@ def extract_altas_bajas(cursor):
             0 AS altas,
             1 AS bajas
         FROM v_asignaciones_pa
-        WHERE YEAR(asignpa_pa_fec_baja) IN (2025, 2024)
+        WHERE YEAR(asignpa_pa_fec_baja) IN (2026, 2025)
     ) t
     GROUP BY anio, mes
     ORDER BY anio, mes;
