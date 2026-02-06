@@ -95,7 +95,7 @@ def extract_prest_sin_pa(cursor):
     SELECT 
       p.prestacion_id,
       CONCAT(p.alumno_apellido, ", ",p.alumno_nombre) as alumno_completo,
-      DATE_FORMAT(COALESCE(MAX(a.asignpa_pa_fec_baja), a.asignpa_fec1), '%d-%m%-%Y') AS ultima_fecha_sin_pa,
+      DATE_FORMAT(MAX(a.asignpa_pa_fec_baja), '%d-%m-%Y') AS ultima_fecha_sin_pa,
       DATEDIFF(CURDATE(), COALESCE(MAX(a.asignpa_pa_fec_baja), p.prestacion_fec_pase_activo)) AS dias_sin_pa
     FROM 
       v_prestaciones p
