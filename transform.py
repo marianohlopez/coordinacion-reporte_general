@@ -60,8 +60,8 @@ def export_excel(data_resumen, data_sin_pa, data_informes, data_seguim, data_seg
     # Cuarta hoja (seguimientos_detalle)
     ws4 = wb.create_sheet(title="Detalle de seguimientos")
 
-    headers_seguimientos = ["COORDINADORA", "PRESTACION ID", "ALUMNO", "MES", "FECHA DE CARGA", 
-                            "CATEG. SEGUIMIENTO"]
+    headers_seguimientos = ["USUARIO DE CARGA", "ROL", "PRESTACION ID", "TIPO", "ALUMNO", 
+                            "MES", "FECHA DE CARGA", "CATEG. SEGUIMIENTO"]
     
     ws4.append(headers_seguimientos)
 
@@ -74,9 +74,9 @@ def export_excel(data_resumen, data_sin_pa, data_informes, data_seguim, data_seg
     # Quinta hoja (seguimientos_mes)
     ws5 = wb.create_sheet(title="Seguimientos por mes")
 
-    headers_seguimientos_mes = ["COORDINADOR", "PRESTACION ID", "ALUMNO", "ENE", "FEB", "MAR", 
-                                "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC", 
-                                "TOTAL ANUAL"]
+    headers_seguimientos_mes = ["ALUMNO", "PRESTACION ID", "TIPO", "USUARIO DE CARGA", "ROL", "ENE", 
+                                "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", 
+                                "NOV", "DIC", "TOTAL ANUAL"]
     
     ws5.append(headers_seguimientos_mes)
 

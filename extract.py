@@ -151,27 +151,28 @@ def extract_informes(cursor):
 def extract_seguim(cursor):
   query = """ 
     SELECT 
-        CONCAT(c.coordi_apellido, ', ', c.coordi_nombre) AS nombre_coordi,
-        s.segalum_prestacion,
-        CONCAT(p.alumno_apellido, ', ', p.alumno_nombre) AS nombre_alumno,
-        s.segalum_mesanio,
-        DATE_FORMAT(s.segalum_fec_carga, '%d-%m-%Y') AS fec_carga,
-        s.segcat_nombre
+      usuario_carga_nombre,
+      r.`role`,
+      s.segalum_prestacion,
+      p.prestipo_nombre_corto,
+      CONCAT(p.alumno_apellido, ', ', p.alumno_nombre) AS nombre_alumno,
+      s.segalum_mesanio,
+      DATE_FORMAT(s.segalum_fec_carga, '%d-%m-%Y') AS fec_carga,
+      s.segcat_nombre
     FROM
-        v_prestaciones p
+      v_prestaciones p
     JOIN v_seguimientos s
-        ON p.prestacion_id = s.segalum_prestacion
+      ON p.prestacion_id = s.segalum_prestacion
     JOIN v_users u
-        ON s.usuario_carga_id = u.user_id
-    JOIN v_coordinadores c
-        ON u.user_email = c.coordi_mail
+      ON s.usuario_carga_id = u.user_id
+	  JOIN v_users_roles r
+		  ON u.user_id = r.user_id
     WHERE
-        p.prestacion_estado IN (0, 1)
-        AND p.prestipo_nombre_corto != 'TERAPIAS'
-        AND s.segalum_rol_carga = 'COORDI'
-        AND YEAR(s.segalum_fec_carga) = 2026 
-        AND p.prestacion_anio = 2026
-    ORDER BY nombre_coordi
+      p.prestacion_estado IN (0, 1)
+      AND s.segalum_rol_carga IN ('COORDI', 'EQUIPO_TECNICO')
+      AND YEAR(s.segalum_fec_carga) = 2026 
+      AND p.prestacion_anio = 2026
+    ORDER BY usuario_carga_nombre
     """
   cursor.execute(query)
   return cursor.fetchall()
@@ -179,9 +180,11 @@ def extract_seguim(cursor):
 def extract_seguim_mes(cursor):
   query = """ 
     SELECT
-      CONCAT(c.coordi_apellido, ', ', c.coordi_nombre) AS nombre_coordi,
+	    CONCAT(p.alumno_apellido, ', ', p.alumno_nombre) AS nombre_alumno,
       p.prestacion_id,
-      CONCAT(p.alumno_apellido, ', ', p.alumno_nombre) AS nombre_alumno,
+      p.prestipo_nombre_corto,
+      s.usuario_carga_nombre,
+      r.`role`,     
       SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 1 THEN 1 ELSE 0 END) AS ene,
       SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 2 THEN 1 ELSE 0 END) AS feb,
       SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 3 THEN 1 ELSE 0 END) AS mar,
@@ -199,19 +202,19 @@ def extract_seguim_mes(cursor):
       v_prestaciones p
     LEFT JOIN v_seguimientos s
       ON p.prestacion_id = s.segalum_prestacion
-      AND s.segalum_rol_carga = 'COORDI'
       AND YEAR(s.segalum_fec_carga) = 2026
-    LEFT JOIN v_coordinadores c
-      ON p.prestacion_coordi = c.coordi_id
+    LEFT JOIN v_users u
+      ON s.usuario_carga_id = u.user_id
+    LEFT JOIN v_users_roles r
+	    ON u.user_id = r.user_id
     WHERE
       p.prestacion_estado IN (0, 1)
-      AND p.prestipo_nombre_corto != 'TERAPIAS'
       AND p.prestacion_anio = 2026
       AND prestacion_coordi IS NOT NULL
     GROUP BY
       p.prestacion_id
     ORDER BY
-      nombre_coordi;
+      nombre_alumno;
     """
   cursor.execute(query)
   return cursor.fetchall()
