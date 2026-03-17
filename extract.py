@@ -160,27 +160,27 @@ def extract_seguim(cursor):
       DATE_FORMAT(s.segalum_fec_carga, '%d-%m-%Y') AS fec_carga,
       s.segcat_nombre
     FROM
-      v_prestaciones p
-    JOIN v_seguimientos s
-      ON p.prestacion_id = s.segalum_prestacion
+      v_seguimientos s
+    LEFT JOIN v_prestaciones p
+      ON s.segalum_prestacion = p.prestacion_id
     JOIN v_users u
       ON s.usuario_carga_id = u.user_id
 	  JOIN v_users_roles r
 		  ON u.user_id = r.user_id
     WHERE
-      p.prestacion_estado IN (0, 1)
+      (p.prestacion_estado IN (0, 1) OR p.prestacion_estado IS NULL)
       AND s.segalum_rol_carga IN ('COORDI', 'EQUIPO_TECNICO')
       AND YEAR(s.segalum_fec_carga) = 2026 
-      AND p.prestacion_anio = 2026
+      AND (p.prestacion_anio = 2026 OR p.prestacion_anio IS NULL)
     ORDER BY usuario_carga_nombre
-    """
+  """
   cursor.execute(query)
   return cursor.fetchall()
 
 def extract_seguim_mes(cursor):
   query = """ 
     SELECT
-	    CONCAT(p.alumno_apellido, ', ', p.alumno_nombre) AS nombre_alumno,
+	    CONCAT(a.alumno_apellido, ', ', a.alumno_nombre) AS nombre_alumno,
       p.prestacion_id,
       p.prestipo_nombre_corto,
       s.usuario_carga_nombre,
@@ -197,22 +197,27 @@ def extract_seguim_mes(cursor):
       SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 10 THEN 1 ELSE 0 END) AS oct,
       SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 11 THEN 1 ELSE 0 END) AS nov,
       SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 12 THEN 1 ELSE 0 END) AS dic,
-      COUNT(s.segalum_prestacion) AS total_anual
+      COUNT(s.segalum_id) AS total_anual
     FROM
-      v_prestaciones p
-    LEFT JOIN v_seguimientos s
-      ON p.prestacion_id = s.segalum_prestacion
-      AND YEAR(s.segalum_fec_carga) = 2026
+      v_seguimientos s
+    LEFT JOIN v_prestaciones p
+      ON s.segalum_prestacion = p.prestacion_id
+    JOIN v_alumnos a
+      ON s.segalum_alumno = a.alumno_id
     LEFT JOIN v_users u
       ON s.usuario_carga_id = u.user_id
     LEFT JOIN v_users_roles r
-	    ON u.user_id = r.user_id
+      ON u.user_id = r.user_id
     WHERE
-      p.prestacion_estado IN (0, 1)
-      AND p.prestacion_anio = 2026
-      AND prestacion_coordi IS NOT NULL
+      (p.prestacion_estado IN (0, 1) OR p.prestacion_estado IS NULL)
+      AND s.segalum_rol_carga IN ('COORDI', 'EQUIPO_TECNICO', 'SISTEMAS')
+      AND (p.prestacion_anio = 2026 OR p.prestacion_anio IS NULL)
+      AND YEAR(s.segalum_fec_carga) = 2026
     GROUP BY
-      p.prestacion_id
+      p.prestacion_id,
+      a.alumno_id,
+      s.usuario_carga_id,
+		  r.role
     ORDER BY
       nombre_alumno;
     """
