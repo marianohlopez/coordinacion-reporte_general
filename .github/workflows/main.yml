@@ -2,7 +2,7 @@ name: Ejecutar coordinacion-resumen general
 
 on:
   schedule:
-    - cron: "0 12 1,15 * *"
+    - cron: "0 10 * * 1"
   workflow_dispatch:
 
 jobs:

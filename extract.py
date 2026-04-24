@@ -122,6 +122,7 @@ def extract_informes(cursor):
         CONCAT(p.alumno_apellido, ', ', p.alumno_nombre) AS nombre_alumno,
         p.alumno_dni,
         COUNT(DISTINCT CASE WHEN i.informecat_nombre = "Informe Inicial - ADMISIÓN" THEN i.alumnoinforme_id END) AS inf_admision,
+        COUNT(DISTINCT CASE WHEN i.informecat_nombre = "Conformidad de PA" THEN i.alumnoinforme_id END) AS conf_pa,
         COUNT(DISTINCT CASE WHEN i.informecat_nombre = "Informe Mensual" THEN i.alumnoinforme_id END) AS inf_mensual,
         COUNT(DISTINCT CASE WHEN (i.informecat_nombre IN ("Informe Diagnóstico", "Informe Semestral", "Informe Medio")) 
             THEN i.alumnoinforme_id END) AS inf_diagnostico,
