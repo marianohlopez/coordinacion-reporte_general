@@ -4,28 +4,28 @@ from datetime import date
 def extract_general(cursor):
 
   query = """
-      WITH prestaciones_alumnos AS (
-        SELECT 
-          prestacion_coordi,
-          CONCAT(coordi_apellido, ', ', coordi_nombre) as coordi_nombre_apellido,
-          COUNT(DISTINCT alumno_id) AS alumnos,
-          COUNT(DISTINCT prestacion_id) AS prestaciones,
-          COUNT(DISTINCT CASE WHEN prestacion_pa IS NOT NULL THEN prestacion_id END) AS prestaciones_con_pa,
-          COUNT(DISTINCT CASE WHEN prestacion_pa IS NULL THEN prestacion_id END) AS prestaciones_sin_pa,
-          COUNT(DISTINCT CASE WHEN calcpagopamod_nombre = "COMPLETO" THEN prestacion_id END) AS completa,
-          COUNT(DISTINCT CASE WHEN calcpagopamod_nombre = "PARCIAL" THEN prestacion_id END) AS parcial,
-          COUNT(DISTINCT CASE WHEN calcpagopamod_nombre = "PACIAL 2 DÍAS" THEN prestacion_id END) AS parcial_2,
-          COUNT(DISTINCT CASE WHEN calcpagopamod_nombre = "PACIAL 3 DÍAS" THEN prestacion_id END) AS parcial_3,
-          COUNT(DISTINCT CASE WHEN calcpagopamod_nombre = "PACIAL 4 DÍAS" THEN prestacion_id END) AS parcial_4,
-          COUNT(DISTINCT CASE WHEN calcpagopamod_nombre = "AL DÍA" THEN prestacion_id END) AS al_dia,
-          COUNT(DISTINCT CASE WHEN calcpagopamod_nombre = "POLETTI AT" THEN prestacion_id END) AS poletti_at
-        FROM v_prestaciones
-        WHERE
-          prestacion_estado IN (0, 1)
-          AND prestipo_nombre_corto != 'TERAPIAS'
-          AND coordi_apellido IS NOT NULL
-          AND prestacion_anio = 2026
-        GROUP BY coordi_nombre, coordi_apellido
+    WITH prestaciones_alumnos AS (
+      SELECT 
+        prestacion_coordi,
+        CONCAT(coordi_apellido, ', ', coordi_nombre) as coordi_nombre_apellido,
+        COUNT(DISTINCT alumno_id) AS alumnos,
+        COUNT(DISTINCT prestacion_id) AS prestaciones,
+        COUNT(DISTINCT CASE WHEN prestacion_pa IS NOT NULL THEN prestacion_id END) AS prestaciones_con_pa,
+        COUNT(DISTINCT CASE WHEN prestacion_pa IS NULL THEN prestacion_id END) AS prestaciones_sin_pa,
+        COUNT(DISTINCT CASE WHEN calcpagopamod_nombre = "COMPLETO" THEN prestacion_id END) AS completa,
+        COUNT(DISTINCT CASE WHEN calcpagopamod_nombre = "PARCIAL" THEN prestacion_id END) AS parcial,
+        COUNT(DISTINCT CASE WHEN calcpagopamod_nombre = "PACIAL 2 DÍAS" THEN prestacion_id END) AS parcial_2,
+        COUNT(DISTINCT CASE WHEN calcpagopamod_nombre = "PACIAL 3 DÍAS" THEN prestacion_id END) AS parcial_3,
+        COUNT(DISTINCT CASE WHEN calcpagopamod_nombre = "PACIAL 4 DÍAS" THEN prestacion_id END) AS parcial_4,
+        COUNT(DISTINCT CASE WHEN calcpagopamod_nombre = "AL DÍA" THEN prestacion_id END) AS al_dia,
+        COUNT(DISTINCT CASE WHEN calcpagopamod_nombre = "POLETTI AT" THEN prestacion_id END) AS poletti_at
+      FROM v_prestaciones
+      WHERE
+        prestacion_estado IN (0, 1)
+        AND prestipo_nombre_corto != 'TERAPIAS'
+        AND coordi_apellido IS NOT NULL
+        AND prestacion_anio = 2026
+      GROUP BY coordi_nombre, coordi_apellido
     ),
     -- Informes (solo de la coordinadora asignada)
     informes AS (
@@ -154,10 +154,10 @@ def extract_seguim(cursor):
   query = """ 
     SELECT 
       usuario_carga_nombre,
-      r.`role`,
+      s.segalum_rol_carga,
       s.segalum_prestacion,
       p.prestipo_nombre_corto,
-      CONCAT(p.alumno_apellido, ', ', p.alumno_nombre) AS nombre_alumno,
+      CONCAT(a.alumno_apellido, ', ', a.alumno_nombre) AS nombre_alumno,
       s.segalum_mesanio,
       DATE_FORMAT(s.segalum_fec_carga, '%d-%m-%Y') AS fec_carga,
       s.segcat_nombre
@@ -165,10 +165,8 @@ def extract_seguim(cursor):
       v_seguimientos s
     LEFT JOIN v_prestaciones p
       ON s.segalum_prestacion = p.prestacion_id
-    JOIN v_users u
-      ON s.usuario_carga_id = u.user_id
-	  JOIN v_users_roles r
-		  ON u.user_id = r.user_id
+    LEFT JOIN v_alumnos a
+      ON s.segalum_alumno = a.alumno_id
     WHERE
       (p.prestacion_estado IN (0, 1) OR p.prestacion_estado IS NULL)
       AND s.segalum_rol_carga IN ('COORDI', 'EQUIPO_TECNICO')
@@ -186,7 +184,7 @@ def extract_seguim_mes(cursor):
       p.prestacion_id,
       p.prestipo_nombre_corto,
       s.usuario_carga_nombre,
-      r.`role`,     
+      s.segalum_rol_carga,     
       SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 1 THEN 1 ELSE 0 END) AS ene,
       SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 2 THEN 1 ELSE 0 END) AS feb,
       SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 3 THEN 1 ELSE 0 END) AS mar,
@@ -199,17 +197,13 @@ def extract_seguim_mes(cursor):
       SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 10 THEN 1 ELSE 0 END) AS oct,
       SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 11 THEN 1 ELSE 0 END) AS nov,
       SUM(CASE WHEN MONTH(s.segalum_fec_carga) = 12 THEN 1 ELSE 0 END) AS dic,
-      COUNT(s.segalum_id) AS total_anual
+      COUNT(DISTINCT s.segalum_id) AS total_anual
     FROM
       v_seguimientos s
     LEFT JOIN v_prestaciones p
       ON s.segalum_prestacion = p.prestacion_id
     JOIN v_alumnos a
       ON s.segalum_alumno = a.alumno_id
-    LEFT JOIN v_users u
-      ON s.usuario_carga_id = u.user_id
-    LEFT JOIN v_users_roles r
-      ON u.user_id = r.user_id
     WHERE
       (p.prestacion_estado IN (0, 1) OR p.prestacion_estado IS NULL)
       AND s.segalum_rol_carga IN ('COORDI', 'EQUIPO_TECNICO', 'SISTEMAS')
@@ -219,7 +213,7 @@ def extract_seguim_mes(cursor):
       p.prestacion_id,
       a.alumno_id,
       s.usuario_carga_id,
-		  r.role
+      s.segalum_rol_carga
     ORDER BY
       nombre_alumno;
     """

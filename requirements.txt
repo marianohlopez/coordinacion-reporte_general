@@ -1,0 +1,6 @@
+mysql-connector-python 
+pymongo
+openpyxl 
+yagmail 
+babel 
+python-dotenv 

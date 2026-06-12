@@ -1,7 +1,7 @@
 from extract import (extract_general, extract_informes, extract_seguim, extract_seguim_mes, extract_prest, 
   extract_prest_sin_pa, extract_altas_bajas)
 from transform import export_excel, enviar_correo
-from db import connect_db
+from db import connect_db, register_report
 
 def main():
     
@@ -17,6 +17,9 @@ def main():
     archivo_excel = export_excel(general_data, prest_sin_pa, informes_data, seguim_data, seguim_mes_data, 
                                  prest_data, altas_bajas)
     enviar_correo(archivo_excel)
+
+    register_report(len(general_data) + len(prest_sin_pa) + len(informes_data) + len(seguim_data)
+                    + len(seguim_mes_data) + len(prest_data) + len(altas_bajas))
 
 if __name__ == "__main__":
   main()
