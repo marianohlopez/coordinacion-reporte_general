@@ -46,7 +46,7 @@ def export_excel(data_resumen, data_sin_pa, data_informes, data_seguim, data_seg
     ws3 = wb.create_sheet(title="Detalle de informes")
 
     headers_informes = ["COORDINADORA", "ALUMNO", "DNI ALUMNO", "INF. ADMISIÓN", "CONF. PA", "INF. MENSUAL", 
-                        "INF. DIAGNÓSTICO", "OTRO", "AA", "PPI", "INF. FINAL", "CONF. FLIA.", 
+                        "INF. DIAGNÓSTICO", "PAC", "OTRO", "AA", "PPI", "INF. FINAL", "CONF. FLIA.", 
                         "INF. ESCOLAR", "INF. TER. EXT.", "PLAN TRAB. COORD."]
     
     ws3.append(headers_informes)
