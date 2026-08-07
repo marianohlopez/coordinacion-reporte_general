@@ -9,11 +9,12 @@ load_dotenv()
 
 MAIL_AUTOR = os.getenv("MAIL_AUTOR")
 APP_GMAIL_PASS = os.getenv("APP_GMAIL_PASS")
-MAIL_DESTINO = os.getenv("MAIL_DESTINO")
+MAIL_DESTINATARIOS = os.getenv("MAIL_DESTINATARIOS")
 
 today = datetime.now()
 
-def export_excel(data_resumen, data_sin_pa, data_informes, data_seguim, data_seguim_mes, data_prest, data_alt_baj):
+def export_excel(data_resumen, data_sin_pa, data_informes, data_seguim, data_seguim_mes, 
+                 data_prest, data_alt_baj):
     wb = Workbook()
     ws = wb.active
     ws.title = "Resumen general"
@@ -119,9 +120,10 @@ def export_excel(data_resumen, data_sin_pa, data_informes, data_seguim, data_seg
 
 def enviar_correo(nombre_archivo):
     try:
+        destinatarios = [correo.strip() for correo in MAIL_DESTINATARIOS.split(",")]
         yag = yagmail.SMTP(MAIL_AUTOR, APP_GMAIL_PASS)
         yag.send(
-            to=MAIL_DESTINO,
+            to=destinatarios,
             subject="Reporte general de Coordinación",
             contents= """Buenos días, se adjunta el reporte del área de Coordinación.
               \nSaludos,\nMariano López - Ailes Inclusión.""",

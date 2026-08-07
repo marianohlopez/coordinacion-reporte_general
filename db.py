@@ -13,10 +13,6 @@ DB_USER = os.getenv('DB_USER')
 DB_PASS = os.getenv('DB_PASS')
 DB_NAME = os.getenv('DB_NAME')
 
-MAIL_AUTOR = os.getenv("MAIL_AUTOR")
-APP_GMAIL_PASS = os.getenv("APP_GMAIL_PASS")
-MAIL_DESTINO = os.getenv("MAIL_DESTINO")
-
 MONGO_URL = os.getenv("MONGO_URL")
 MONGO_DB = os.getenv("MONGO_DB")
 COLLECTION = os.getenv("COLLECTION")
@@ -47,7 +43,7 @@ def register_report(cant_registros):
       "timestamp": datetime.now() - timedelta(hours=3),
       "area": "Coordinacion",
       "tipo_reporte": "general",
-      "cant_enviados": 1,
+      "cant_enviados": 2,
       "cant_registros": cant_registros
     }
 

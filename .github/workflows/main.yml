@@ -2,7 +2,7 @@ name: Ejecutar coordinacion-resumen general
 
 on:
   schedule:
-    - cron: "0 7 * * 1"
+    - cron: "42 6 * * 1"
   workflow_dispatch:
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
           DB_NAME: ${{ secrets.DB_NAME }}
           MAIL_AUTOR: ${{ secrets.MAIL_AUTOR }}
           APP_GMAIL_PASS: ${{ secrets.APP_GMAIL_PASS }}
-          MAIL_DESTINO: ${{ secrets.MAIL_DESTINO }}
+          MAIL_DESTINATARIOS: ${{ secrets.MAIL_DESTINATARIOS }}
           MONGO_URL: ${{ secrets.MONGO_URL }}
           MONGO_DB: ${{ secrets.MONGO_DB }}
           COLLECTION: ${{ secrets.COLLECTION }}
