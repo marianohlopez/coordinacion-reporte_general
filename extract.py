@@ -123,6 +123,7 @@ def extract_informes(cursor):
         p.alumno_dni,
         COUNT(DISTINCT CASE WHEN i.informecat_nombre = "Informe Inicial - ADMISIÓN" THEN i.alumnoinforme_id END) AS inf_admision,
         COUNT(DISTINCT CASE WHEN i.informecat_nombre = "Conformidad de PA" THEN i.alumnoinforme_id END) AS conf_pa,
+        COUNT(DISTINCT CASE WHEN i.informecat_nombre = "Informe social de seguimiento" THEN i.alumnoinforme_id END) AS inf_social,
         COUNT(DISTINCT CASE WHEN i.informecat_nombre = "Informe Mensual" THEN i.alumnoinforme_id END) AS inf_mensual,
         COUNT(DISTINCT CASE WHEN (i.informecat_nombre IN ("Informe Diagnóstico", "Informe Semestral", "Informe Medio")) 
             THEN i.alumnoinforme_id END) AS inf_diagnostico,
