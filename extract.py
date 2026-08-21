@@ -141,7 +141,10 @@ def extract_informes(cursor):
         ON p.prestacion_coordi = c.coordi_id
     LEFT JOIN v_informes i 
         ON p.alumno_id = i.alumno_id 
-    AND i.alumnoinforme_anio = '2026'
+        AND (
+            i.alumnoinforme_anio = '2026'
+            OR i.informecat_nombre = "Informe Inicial - ADMISIÓN"
+        )
     WHERE
         p.prestipo_nombre_corto != 'TERAPIAS'
         AND p.prestacion_estado IN (0, 1)
